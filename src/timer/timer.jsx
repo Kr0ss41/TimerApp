@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const Timer = () => {
+const Timer = ({ active, onStop }) => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
+  const [markTimes,setMarkTimes] = useState([{id:0, time:0}])
+  const [iterations,setIterations] = useState(0) 
 
-  // Форматирование секунд в HH:MM:SS
   const formatTime = (secs) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
@@ -14,7 +15,6 @@ const Timer = () => {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
-  // Запуск таймера
   const startTimer = () => {
     if (!isRunning) {
       setIsRunning(true);
@@ -24,38 +24,46 @@ const Timer = () => {
     }
   };
 
-  // Остановка таймера
   const stopTimer = () => {
-    clearInterval(timerRef.current);
+    // setIterations(iterations+1)
+    // setMarkTimes([...markTimes,{id:iterations, time:seconds}])
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
     setIsRunning(false);
+    if (onStop) {
+      onStop(seconds);
+    }
   };
 
-  // Сброс таймера
-  const resetTimer = () => {
-    clearInterval(timerRef.current);
-    setSeconds(0);
-    setIsRunning(false);
-  };
-
-  // Очищаем таймер при размонтировании компонента
   useEffect(() => {
-    return () => clearInterval(timerRef.current);
+    if (active) {
+      startTimer();
+    } else if (isRunning) {
+      stopTimer();
+    }
+  }, [active]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, []);
 
   return (
     <div>
-      <div style={{ fontSize: '2em', marginBottom: '20px' }}>
+      <div style={{ fontSize: '1.2rem', marginBottom: '20px' }}>
         {formatTime(seconds)}
       </div>
-      <button onClick={startTimer} disabled={isRunning}>
-        Старт
-      </button>
-      <button onClick={stopTimer} disabled={!isRunning}>
-        Пауза
-      </button>
-      <button onClick={resetTimer}>Сброс</button>
+      <div>{markTimes.id} {markTimes.time}</div>
     </div>
   );
 };
 
 export default Timer;
+export function formatTime(){
+  
+}
