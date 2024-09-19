@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './header.css'
-import setActive from './modal/Modal'
 
 const Header = () => {
   return (
@@ -9,6 +8,7 @@ const Header = () => {
       <nav>
         <ul>
           <li><Link className='logo' to="/">NAME</Link></li>
+          <li><Link className='chartsButton' to="/charts"> CHARTS</Link></li>
         </ul>
       </nav>
     </header>

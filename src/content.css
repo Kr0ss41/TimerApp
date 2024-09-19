@@ -91,6 +91,6 @@
 .activeMarkButton{
   background-color: aqua;
 }
-.activeMarkButton:disabled{
+.inactiveMarkButton{
   background-color: blueviolet;
 }
