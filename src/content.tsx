@@ -13,6 +13,7 @@ const Content: React.FC = () => {
     title: string;
     active: boolean;
     markQueue: number;
+    marksCount : number;
     markList: { id: number; title: string; markTimer: number, active: boolean, time: number }[];
   }
 
@@ -37,16 +38,17 @@ const Content: React.FC = () => {
   const [finishActive, setFinishActive] = useState(false);
   const [errorTrigger, setErrorTrigger] = useState(false);
   const [tasksCount, setTasksCount] = useState(1);
-  const [marksCount, setMarksCount] = useState(2);
+  const [marksCounts, setMarksCounts] = useState(2);
   const [marks, setMarks] = useState([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
   const [totalTime, setTotalTime] = useState(0);
+  const [completedTask, setCompletedTask] = useState<Task | null>(null);
 
   const addMark = () => {
     setMarks([
       ...marks,
-      { id: marksCount, title: '', markTimer: Date.now(), active: false, time: 0 }
+      { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 }
     ]);
-    setMarksCount(marksCount + 1);
+    setMarksCounts(marksCounts + 1);
   };
 
   const updateMarkText = (id: number, newTitle: string) => {
@@ -71,11 +73,11 @@ const Content: React.FC = () => {
   const addTask = () => {
     setTasks([
       ...tasks,
-      { id: tasksCount, title: text, active: false, markQueue: 0, markList: [...marks] }
+      { id: tasksCount, title: text, active: false,marksCount:marksCounts, markQueue: 0, markList: [...marks] }
     ]);
     setTasksCount(tasksCount + 1);
     setText("");
-    setMarksCount(2);
+    setMarksCounts(2);
     setMarks([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
   };
 
@@ -96,7 +98,8 @@ const Content: React.FC = () => {
           }
           return mark;
         });
-        
+        console.log(task.markQueue, 'markqueue')
+      console.log(task.marksCount, 'markscount')
         return {
           ...task,
           markList: updatedMarkList,
@@ -105,24 +108,28 @@ const Content: React.FC = () => {
         };
         
       }
-      console.log(task.markQueue, 'fdgdfgdf')
-      console.log(marksCount)
+      
+      
       return task;
     }));
+    
     setFinishActive(false);
   };
 
   const handleResult = (taskId: number) => {
-    setTasks(tasks.map((task: Task) => {
-      if (task.id === taskId && task.markQueue >= task.markList.length) {
-        const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
-        setTotalTime(totalTime);
-        setTimers([...timers, totalTime])
-        setFinishActive(true);
-        return { ...task, active: false };
-      }
-      return task;
-    }));
+    setTasks(
+      tasks.map((task:Task) => {
+        if (task.id === taskId && task.markQueue >= task.markList.length) {
+          const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
+          setTotalTime(totalTime);
+          setTimers([...timers, totalTime]);
+          setFinishActive(true);
+          setCompletedTask(task);
+          return { ...task, active: false };
+        }
+        return task;
+      })
+    );
   };
 
   return (
@@ -131,23 +138,27 @@ const Content: React.FC = () => {
         <button className='testbtn' onClick={() => setModalActive(true)}>Создать новое дело</button>
       </main>
       <Modal active={finishActive} setActive={setFinishActive}>
-        <h1 className='endscreenTitle'>ЗАВЕРШЕНО!</h1>
-        <p className='endscreenText'>Дело завершено за {formatTimeNamed(totalTime)}</p>
-        <p className='endscreenMarksTitle'>Отчёт по отсечкам: </p>
-        <div>
-          {tasks.map((task: Task) => (
-            task.markList.map((mark) => (
-              <div key={mark.id}>
-                <li className='li'>
-                  <img src={cornerArrow} alt="" />
-                  <span>{mark.title}</span>
-                  <div className='endscreenMarkTimer'>{formatTime(mark.time)}</div>
-                </li>
-              </div>
-            ))
-          ))}
-        </div>
-        <button onClick={()=>setFinishActive(false)} className='endscreenButton'>ЗАКРЫТЬ</button>
+        <h1 className="endscreenTitle">ЗАВЕРШЕНО!</h1>
+        {completedTask && (
+          <>
+            <p className="endscreenText">Дело завершено за {formatTimeNamed(totalTime)}</p>
+            <p className="endscreenMarksTitle">Отчёт по отсечкам: </p>
+            <div>
+              {completedTask.markList.map((mark) => (
+                <div key={mark.id}>
+                  <li className="li">
+                    <img src={cornerArrow} alt="" />
+                    <span>{mark.title || `Отсечка ${mark.id}`}</span>
+                    <div className="endscreenMarkTimer">{formatTime(mark.time)}</div>
+                  </li>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+        <button onClick={() => setFinishActive(false)} className="endscreenButton">
+          ЗАКРЫТЬ
+        </button>
       </Modal>
       <Modal active={modalActive} setActive={setModalActive}>
         <h3 className='name'>Название</h3>
@@ -168,7 +179,7 @@ const Content: React.FC = () => {
         <div className='timeMarks'>
           <div className='marksnbutton'>
             <h3 className='name'>Отсечки</h3>
-            <button className='addMarkButton' onClick={() => { marksCount < 11 ? addMark() : null }}>
+            <button className='addMarkButton' onClick={() => marksCounts < 11 ? addMark() : null }>
               <img src={Plus} alt="" />
             </button>
           </div>
@@ -225,8 +236,8 @@ const Content: React.FC = () => {
             </div>
           ))}
           <button
-            disabled={task.markQueue <= marksCount}
-            className={task.markQueue <= marksCount ? 'resultButton' : 'resultButton result'}
+            disabled={task.markQueue < task.marksCount}
+            className={task.markQueue < task.marksCount ? 'resultButton' : 'resultButton result'}
             onClick={() => handleResult(task.id)}
           >
             ПОДВЕСТИ ИТОГИ
