@@ -4,6 +4,7 @@ header{
     margin: 0;
     top: 0;
     width: 100vw;
+    position:relative;
 }
 .logo{
     color:white;

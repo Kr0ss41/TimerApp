@@ -8,6 +8,8 @@
     padding-right: 5px;
     width: 100px;
     text-align: center;
+    margin: 0 auto;
+    display: block;
 }
 .activeTimer{
     background-color: #4C51CA;

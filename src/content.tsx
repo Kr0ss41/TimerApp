@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './content.css'
 import Modal from './modal/Modal.jsx'
 import Plus from './icons/plus.svg'
@@ -6,8 +6,6 @@ import cornerArrow from './icons/cornerArrow.svg'
 import Timer from './timer/timer.jsx'
 import './reset.css'
 import CheckIcon from './icons/check.svg'
-import MyChart from './charts/chartComponent.jsx'
-
 
 const Content: React.FC = () => {
   interface Task {
@@ -22,6 +20,17 @@ const Content: React.FC = () => {
     const savedTasks = localStorage.getItem('tasks');
     return savedTasks ? JSON.parse(savedTasks) : [];
   });
+  // useEffect(() => {
+  //   localStorage.setItem('tasks', JSON.stringify(tasks));
+  // }, [tasks]);
+
+  const [timers, setTimers] = useState(() => {
+    const savedTimers = localStorage.getItem('timers')
+    return savedTimers ? JSON.parse(savedTimers) : [];
+  });
+  useEffect(() => {
+    localStorage.setItem('timers', JSON.stringify(timers));
+  }, [timers]);
 
   const [text, setText] = useState("");
   const [modalActive, setModalActive] = useState(false);
@@ -45,7 +54,20 @@ const Content: React.FC = () => {
       mark.id === id ? { ...mark, title: newTitle } : mark
     ));
   };
+  const formatTime = (secs: number) => {
+    const hours = Math.floor(secs / 3600);
+    const minutes = Math.floor((secs % 3600) / 60);
+    const seconds = secs % 60;
 
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+  const formatTimeNamed = (secs: number) => {
+    const hours = Math.floor(secs / 3600);
+    const minutes = Math.floor((secs % 3600) / 60);
+    const seconds = secs % 60;
+
+    return <span className='endscreenTimer'>{String(hours).padStart(2, '0')} ч. {String(minutes).padStart(2, '0')} м. {String(seconds).padStart(2, '0')} с.</span>;
+  };
   const addTask = () => {
     setTasks([
       ...tasks,
@@ -74,13 +96,17 @@ const Content: React.FC = () => {
           }
           return mark;
         });
-
+        
         return {
           ...task,
           markList: updatedMarkList,
           markQueue: markId + 1, // Обновляем очередь отсечек
+          
         };
+        
       }
+      console.log(task.markQueue, 'fdgdfgdf')
+      console.log(marksCount)
       return task;
     }));
     setFinishActive(false);
@@ -91,6 +117,7 @@ const Content: React.FC = () => {
       if (task.id === taskId && task.markQueue >= task.markList.length) {
         const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
         setTotalTime(totalTime);
+        setTimers([...timers, totalTime])
         setFinishActive(true);
         return { ...task, active: false };
       }
@@ -101,10 +128,26 @@ const Content: React.FC = () => {
   return (
     <div className='mainBody'>
       <main>
-        <button className='testbtn' onClick={() => setModalActive(true)}>Открыть окно</button>
+        <button className='testbtn' onClick={() => setModalActive(true)}>Создать новое дело</button>
       </main>
       <Modal active={finishActive} setActive={setFinishActive}>
-        {totalTime}
+        <h1 className='endscreenTitle'>ЗАВЕРШЕНО!</h1>
+        <p className='endscreenText'>Дело завершено за {formatTimeNamed(totalTime)}</p>
+        <p className='endscreenMarksTitle'>Отчёт по отсечкам: </p>
+        <div>
+          {tasks.map((task: Task) => (
+            task.markList.map((mark) => (
+              <div key={mark.id}>
+                <li className='li'>
+                  <img src={cornerArrow} alt="" />
+                  <span>{mark.title}</span>
+                  <div className='endscreenMarkTimer'>{formatTime(mark.time)}</div>
+                </li>
+              </div>
+            ))
+          ))}
+        </div>
+        <button onClick={()=>setFinishActive(false)} className='endscreenButton'>ЗАКРЫТЬ</button>
       </Modal>
       <Modal active={modalActive} setActive={setModalActive}>
         <h3 className='name'>Название</h3>
@@ -182,8 +225,8 @@ const Content: React.FC = () => {
             </div>
           ))}
           <button
-            disabled={task.markQueue < marksCount}
-            className={task.markQueue > marksCount ? 'resultButton result' : 'resultButton'}
+            disabled={task.markQueue <= marksCount}
+            className={task.markQueue <= marksCount ? 'resultButton' : 'resultButton result'}
             onClick={() => handleResult(task.id)}
           >
             ПОДВЕСТИ ИТОГИ
