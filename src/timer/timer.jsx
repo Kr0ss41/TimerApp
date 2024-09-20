@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import './timer.css'
 
 const Timer = ({ active, onStop }) => {
   const [seconds, setSeconds] = useState(0);
@@ -55,10 +56,9 @@ const Timer = ({ active, onStop }) => {
 
   return (
     <div>
-      <div style={{ fontSize: '1.2rem', marginBottom: '20px' }}>
+      <div className={isRunning ? 'timer activeTimer' : 'timer inactiveTimer'}>
         {formatTime(seconds)}
       </div>
-      <div>{markTimes.id} {markTimes.time}</div>
     </div>
   );
 };

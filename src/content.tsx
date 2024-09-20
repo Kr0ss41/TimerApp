@@ -5,6 +5,7 @@ import Plus from './icons/plus.svg'
 import cornerArrow from './icons/cornerArrow.svg'
 import Timer from './timer/timer.jsx'
 import './reset.css'
+import CheckIcon from './icons/check.svg'
 import MyChart from './charts/chartComponent.jsx'
 
 
@@ -130,7 +131,7 @@ const Content: React.FC = () => {
           </div>
           {marks.map((mark, index) => (
             <div key={index} className='markItem'>
-              <h4>Отсечка {mark.id}</h4>
+              <h4 className='markTitle'>Отсечка {mark.id}</h4>
               <div className='marksInput'>
                 <img src={cornerArrow} alt="" />
                 <input
@@ -144,23 +145,29 @@ const Content: React.FC = () => {
             </div>
           ))}
         </div>
-        <button onClick={() => {
-          text.length > 0 ? addTask() : setErrorTrigger(true);
-        }}>
-          ДОБАВИТЬ ДЕЛО
-        </button>
+        <div className='finishEdit'>
+          <button className='finishEditButton' onClick={() => {
+            text.length > 0 ? addTask() : setErrorTrigger(true);
+          }}>
+            ДОБАВИТЬ ДЕЛО
+          </button>
+        </div>
       </Modal>
       {tasks.map((task: Task, index: number) => (
         <div key={index} className='taskItem'>
           <div className='taskTitleAndButton'>
-            {task.title}
-            <button disabled={task.active} onClick={() => startButton(task.id)}>
+            <h2 className='taskTitle'>{task.title}</h2>
+            <button className='startTask' disabled={task.active} onClick={() => startButton(task.id)}>
               {task.active ? "В ПРОЦЕССЕ..." : "НАЧАТЬ"}
             </button>
           </div>
+          <h2 className='markSubTitle margin35left'>Отсечки :</h2>
           {task.markList.map((mark, index) => (
             <div key={index} className='markAndTimer'>
-              {mark.title || `Отсечка ${mark.id}`}
+              <div className='iconNName'>
+                <img className='icon' src={cornerArrow} alt="" />
+                <h3 className='markSubTitle'>{mark.title || `Отсечка ${mark.id}`}</h3>
+              </div>
               <Timer
                 onStop={(seconds: number) => markButton(task.id, mark.id, seconds)}
                 active={task.active && mark.id === task.markQueue}
@@ -170,11 +177,8 @@ const Content: React.FC = () => {
                 disabled={mark.id !== task.markQueue}
                 className={mark.id === task.markQueue ? 'activeMarkButton' : 'inactiveMarkButton'}
               >
+                {mark.id === task.markQueue ? <img src={CheckIcon} alt="" /> : "Не активна"}
               </button>
-
-              <div>
-                {mark.time > 0 ? `${mark.time} секунд` : 'Таймер не остановлен'}
-              </div>
             </div>
           ))}
           <button
