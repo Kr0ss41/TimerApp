@@ -6,48 +6,48 @@ import cornerArrow from './icons/cornerArrow.svg'
 import Timer from './timer/timer.jsx'
 import './reset.css'
 import CheckIcon from './icons/check.svg'
+import TrashIcon from './icons/trash.svg'
 
-const Content: React.FC = () => {
-  interface Task {
-    id: number;
-    title: string;
-    active: boolean;
-    markQueue: number;
-    marksCount : number;
-    markList: { id: number; title: string; markTimer: number, active: boolean, time: number }[];
-  }
+interface Mark {
+  id: number;
+  title: string;
+  markTimer: number;
+  active: boolean;
+  time: number;
+}
 
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
-  // useEffect(() => {
-  //   localStorage.setItem('tasks', JSON.stringify(tasks));
-  // }, [tasks]);
+interface Task {
+  id: number;
+  title: string;
+  active: boolean;
+  markQueue: number;
+  marksCount: number;
+  allStarts: number[];
+  markList: Mark[];
+}
 
-  const [timers, setTimers] = useState(() => {
-    const savedTimers = localStorage.getItem('timers')
-    return savedTimers ? JSON.parse(savedTimers) : [];
-  });
-  useEffect(() => {
-    localStorage.setItem('timers', JSON.stringify(timers));
-  }, [timers]);
+interface ContentProps {
+  tasks: Task[];
+  setTasks: React.Dispatch<React.SetStateAction<Task[]>>;
+  timers: number[];
+  setTimers: React.Dispatch<React.SetStateAction<number[]>>;
+}
 
+const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers }) => {
   const [text, setText] = useState("");
   const [modalActive, setModalActive] = useState(false);
   const [finishActive, setFinishActive] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const [errorTrigger, setErrorTrigger] = useState(false);
   const [tasksCount, setTasksCount] = useState(1);
   const [marksCounts, setMarksCounts] = useState(2);
-  const [marks, setMarks] = useState([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+  const [marks, setMarks] = useState<Mark[]>([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
   const [totalTime, setTotalTime] = useState(0);
   const [completedTask, setCompletedTask] = useState<Task | null>(null);
 
   const addMark = () => {
-    setMarks([
-      ...marks,
-      { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 }
-    ]);
+    setMarks([...marks, { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 }]);
     setMarksCounts(marksCounts + 1);
   };
 
@@ -56,24 +56,25 @@ const Content: React.FC = () => {
       mark.id === id ? { ...mark, title: newTitle } : mark
     ));
   };
+
   const formatTime = (secs: number) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
     const seconds = secs % 60;
-
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
+
   const formatTimeNamed = (secs: number) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
     const seconds = secs % 60;
-
     return <span className='endscreenTimer'>{String(hours).padStart(2, '0')} ч. {String(minutes).padStart(2, '0')} м. {String(seconds).padStart(2, '0')} с.</span>;
   };
+
   const addTask = () => {
     setTasks([
       ...tasks,
-      { id: tasksCount, title: text, active: false,marksCount:marksCounts, markQueue: 0, markList: [...marks] }
+      { id: tasksCount, title: text, active: false, marksCount: marksCounts, markQueue: 0, allStarts: [], markList: [...marks] }
     ]);
     setTasksCount(tasksCount + 1);
     setText("");
@@ -84,11 +85,19 @@ const Content: React.FC = () => {
   const startButton = (taskId: number) => {
     setTasks(tasks.map((task: Task) =>
       task.id === taskId
-        ? { ...task, active: true, markQueue: 1 }
+        ? {
+          ...task,
+          active: true,
+          markQueue: 1,
+          markList: task.markList.map(mark => ({ ...mark, time: 0 }))
+        }
         : task
     ));
   };
 
+  const deleteTask = (taskId: number) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
   const markButton = (taskId: number, markId: number, time: number) => {
     setTasks(tasks.map((task: Task) => {
       if (task.id === taskId) {
@@ -99,44 +108,79 @@ const Content: React.FC = () => {
           return mark;
         });
         console.log(task.markQueue, 'markqueue')
-      console.log(task.marksCount, 'markscount')
+        console.log(task.marksCount, 'markscount')
         return {
           ...task,
           markList: updatedMarkList,
           markQueue: markId + 1, // Обновляем очередь отсечек
-          
+
         };
-        
+
       }
-      
-      
+
       return task;
     }));
-    
+
     setFinishActive(false);
   };
 
   const handleResult = (taskId: number) => {
     setTasks(
-      tasks.map((task:Task) => {
+      tasks.map((task: Task) => {
         if (task.id === taskId && task.markQueue >= task.markList.length) {
           const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
           setTotalTime(totalTime);
           setTimers([...timers, totalTime]);
-          setFinishActive(true);
+
+          const updatedAllStarts = [...task.allStarts, totalTime];
+
+          if (updatedAllStarts.length > 20) {
+            updatedAllStarts.shift();
+          }
+
           setCompletedTask(task);
-          return { ...task, active: false };
+          setFinishActive(true);
+          return {
+            ...task,
+            active: false,
+            allStarts: updatedAllStarts
+          };
         }
         return task;
       })
     );
   };
 
+
   return (
     <div className='mainBody'>
       <main>
         <button className='testbtn' onClick={() => setModalActive(true)}>Создать новое дело</button>
       </main>
+      <Modal active={deleteModal} setActive={setDeleteModal}>
+        <h3 className='deleteTitle'>Удалить задачу</h3>
+        {taskToDelete !== null && (
+          <div>
+            <p className='deleteText'>Вы действительно хотите удалить задачу "{tasks.find(t => t.id === taskToDelete)?.title}"?</p>
+            <div className='deleteButtons'>
+              <button className='deleteConfirm' onClick={() => {
+                if (taskToDelete !== null) {
+                  deleteTask(taskToDelete);
+                  setDeleteModal(false);
+                  setTaskToDelete(null); // Сбрасываем идентификатор после удаления
+                }
+              }}>Удалить</button>
+              <button className='deleteDecline' onClick={() => {
+                setDeleteModal(false);
+                setTaskToDelete(null); // Сбрасываем идентификатор при отмене
+              }}>Отмена</button>
+            </div>
+
+          </div>
+        )}
+      </Modal>
+
+
       <Modal active={finishActive} setActive={setFinishActive}>
         <h1 className="endscreenTitle">ЗАВЕРШЕНО!</h1>
         {completedTask && (
@@ -179,7 +223,7 @@ const Content: React.FC = () => {
         <div className='timeMarks'>
           <div className='marksnbutton'>
             <h3 className='name'>Отсечки</h3>
-            <button className='addMarkButton' onClick={() => marksCounts < 11 ? addMark() : null }>
+            <button className='addMarkButton' onClick={() => marksCounts < 11 ? addMark() : null}>
               <img src={Plus} alt="" />
             </button>
           </div>
@@ -235,13 +279,20 @@ const Content: React.FC = () => {
               </button>
             </div>
           ))}
-          <button
+          <div className='bottomButtons'><button
             disabled={task.markQueue < task.marksCount}
             className={task.markQueue < task.marksCount ? 'resultButton' : 'resultButton result'}
             onClick={() => handleResult(task.id)}
           >
             ПОДВЕСТИ ИТОГИ
           </button>
+            <button onClick={() => {
+              setTaskToDelete(task.id);
+              setDeleteModal(true);
+            }} className='deleteTask'>
+              <img src={TrashIcon} alt="" />
+            </button>
+          </div>
         </div>
       ))}
     </div>

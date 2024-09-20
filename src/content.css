@@ -125,10 +125,17 @@
 }
 .taskTitle{
   font-size: 25px;
+  color: white;
   font-weight: 700;
   margin-left: 48px;
   margin-bottom:3px;
   align-items: center;
+  text-shadow: 
+    -2px -2px 0px #4C51CA,  
+    2px -2px 0px #4C51CA,
+    -2px 2px 0px #4C51CA,
+    2px 2px 0px #4C51CA,
+    0px 0px 2px #4C51CA;
 }
 .startTask{
   background-color: #4C51CA;
@@ -142,6 +149,19 @@
   border-color: #4C51CA;
   border-width: 2px;
   letter-spacing: normal;
+}
+.bottomButtons{
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+.deleteTask{
+  margin-top: 10px;
+  margin-right: 0;
+  background-color: transparent;
+
 }
 .markAndTimer{
   display: flex;
@@ -185,10 +205,11 @@ margin-left: 35px;
   background-color: #4C51CA;
   color: white;
   letter-spacing: 3px;
-  margin: 0 auto;
-  display: block;
-  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 30px;
   margin-bottom: 15px;
+  left: 50%;
 }
 .result{
   opacity: 100;
@@ -249,4 +270,37 @@ margin-left: 35px;
   font-weight: 600;
   font-size: 20px;
   margin-bottom: 10px;
+}
+
+/* DELETE */
+.deleteTitle{
+  color: #4C51CA;
+  font-size: 38px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.deleteText{
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+.deleteButtons{
+  display: flex;
+  justify-content: center;
+}
+.deleteConfirm{
+  color: white;
+  background-color: #4C51CA;
+  margin-right: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.deleteDecline{
+  color: #4C51CA;
+  background-color: white;
+  border-color: #4C51CA;
+  font-weight: 700;
+  letter-spacing: 1px;
 }

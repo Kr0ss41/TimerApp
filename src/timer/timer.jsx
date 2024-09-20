@@ -5,8 +5,7 @@ const Timer = ({ active, onStop }) => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
-  const [markTimes,setMarkTimes] = useState([{id:0, time:0}])
-  const [iterations,setIterations] = useState(0) 
+
 
   const formatTime = (secs) => {
     const hours = Math.floor(secs / 3600);
@@ -37,9 +36,12 @@ const Timer = ({ active, onStop }) => {
       onStop(seconds);
     }
   };
-
+  const resetTimer = () => {
+    setSeconds(0);
+  };
   useEffect(() => {
     if (active) {
+      resetTimer();
       startTimer();
     } else if (isRunning) {
       stopTimer();
