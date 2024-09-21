@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./header.css";
-import ChartIcon from "./icons/charts.svg";
+import { ChartsIcon } from "./icons/ChartsIcon";
 
 const Header = () => {
   return (
@@ -15,7 +15,9 @@ const Header = () => {
           </li>
           <li>
             <Link className='chartsButton' to='/charts'>
-              <img src={ChartIcon} width='70px' height='70px' alt='' />
+              <ChartsIcon
+                styles={{ width: "70px", height: "70px", color: "white" }}
+              />
             </Link>
           </li>
         </ul>

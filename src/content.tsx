@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 import "./content.css";
 import CheckIcon from "./icons/check.svg";
@@ -5,8 +6,9 @@ import cornerArrow from "./icons/cornerArrow.svg";
 import Plus from "./icons/plus.svg";
 import TrashIcon from "./icons/trash.svg";
 import Modal from "./modal/Modal.jsx";
-import "./reset.css";
 import Timer from "./timer/timer.jsx";
+
+import "./reset.css";
 
 interface Mark {
   id: number;
@@ -138,7 +140,7 @@ const Content: React.FC<ContentProps> = ({
   };
   const markButton = (taskId: number, markId: number, time: number) => {
     setTasks(
-      tasks.map((task: Task) => {
+      tasks.map((task) => {
         if (task.id === taskId) {
           const updatedMarkList = task.markList.map((mark) => {
             if (mark.id === markId) {
@@ -164,7 +166,7 @@ const Content: React.FC<ContentProps> = ({
 
   const handleResult = (taskId: number) => {
     setTasks(
-      tasks.map((task: Task) => {
+      tasks.map((task) => {
         if (task.id === taskId && task.markQueue >= task.markList.length) {
           const totalTime = task.markList.reduce(
             (total, mark) => total + mark.time,
@@ -267,7 +269,7 @@ const Content: React.FC<ContentProps> = ({
       <Modal active={modalActive} setActive={setModalActive}>
         <h3 className='name'>Название</h3>
         <div className='inputAndStar'>
-          <p className={errorTrigger ? "star error" : "star"}>*</p>
+          <p className={clsx("star", errorTrigger && "error")}>*</p>
           <input
             type='text'
             placeholder='Введите текст'
