@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import './content.css'
-import Modal from './modal/Modal.jsx'
-import Plus from './icons/plus.svg'
-import cornerArrow from './icons/cornerArrow.svg'
-import Timer from './timer/timer.jsx'
-import './reset.css'
-import CheckIcon from './icons/check.svg'
-import TrashIcon from './icons/trash.svg'
+import { useState } from "react";
+import "./content.css";
+import CheckIcon from "./icons/check.svg";
+import cornerArrow from "./icons/cornerArrow.svg";
+import Plus from "./icons/plus.svg";
+import TrashIcon from "./icons/trash.svg";
+import Modal from "./modal/Modal.jsx";
+import "./reset.css";
+import Timer from "./timer/timer.jsx";
 
 interface Mark {
   id: number;
@@ -33,7 +33,12 @@ interface ContentProps {
   setTimers: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers }) => {
+const Content: React.FC<ContentProps> = ({
+  tasks,
+  setTasks,
+  timers,
+  setTimers,
+}) => {
   const [text, setText] = useState("");
   const [modalActive, setModalActive] = useState(false);
   const [finishActive, setFinishActive] = useState(false);
@@ -42,84 +47,117 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
   const [errorTrigger, setErrorTrigger] = useState(false);
   const [tasksCount, setTasksCount] = useState(1);
   const [marksCounts, setMarksCounts] = useState(2);
-  const [marks, setMarks] = useState<Mark[]>([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+  const [marks, setMarks] = useState<Mark[]>([
+    { id: 1, title: "", markTimer: Date.now(), active: false, time: 0 },
+  ]);
   const [totalTime, setTotalTime] = useState(0);
   const [completedTask, setCompletedTask] = useState<Task | null>(null);
 
   const addMark = () => {
-    setMarks([...marks, { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+    setMarks([
+      ...marks,
+      {
+        id: marksCounts,
+        title: "",
+        markTimer: Date.now(),
+        active: false,
+        time: 0,
+      },
+    ]);
     setMarksCounts(marksCounts + 1);
   };
 
   const updateMarkText = (id: number, newTitle: string) => {
-    setMarks(marks.map(mark =>
-      mark.id === id ? { ...mark, title: newTitle } : mark
-    ));
+    setMarks(
+      marks.map((mark) =>
+        mark.id === id ? { ...mark, title: newTitle } : mark
+      )
+    );
   };
 
   const formatTime = (secs: number) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
     const seconds = secs % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(seconds).padStart(2, "0")}`;
   };
 
   const formatTimeNamed = (secs: number) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
     const seconds = secs % 60;
-    return <span className='endscreenTimer'>{String(hours).padStart(2, '0')} ч. {String(minutes).padStart(2, '0')} м. {String(seconds).padStart(2, '0')} с.</span>;
+    return (
+      <span className='endscreenTimer'>
+        {String(hours).padStart(2, "0")} ч. {String(minutes).padStart(2, "0")}{" "}
+        м. {String(seconds).padStart(2, "0")} с.
+      </span>
+    );
   };
 
   const addTask = () => {
     setTasks([
       ...tasks,
-      { id: tasksCount, title: text, active: false, marksCount: marksCounts, markQueue: 0, allStarts: [], markList: [...marks] }
+      {
+        id: tasksCount,
+        title: text,
+        active: false,
+        marksCount: marksCounts,
+        markQueue: 0,
+        allStarts: [],
+        markList: [...marks],
+      },
     ]);
     setTasksCount(tasksCount + 1);
     setText("");
     setMarksCounts(2);
-    setMarks([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+    setMarks([
+      { id: 1, title: "", markTimer: Date.now(), active: false, time: 0 },
+    ]);
   };
 
   const startButton = (taskId: number) => {
-    setTasks(tasks.map((task: Task) =>
-      task.id === taskId
-        ? {
-          ...task,
-          active: true,
-          markQueue: 1,
-          markList: task.markList.map(mark => ({ ...mark, time: 0 }))
-        }
-        : task
-    ));
+    setTasks(
+      tasks.map((task: Task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              active: true,
+              markQueue: 1,
+              markList: task.markList.map((mark) => ({ ...mark, time: 0 })),
+            }
+          : task
+      )
+    );
   };
 
   const deleteTask = (taskId: number) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
+    setTasks(tasks.filter((task) => task.id !== taskId));
   };
   const markButton = (taskId: number, markId: number, time: number) => {
-    setTasks(tasks.map((task: Task) => {
-      if (task.id === taskId) {
-        const updatedMarkList = task.markList.map((mark) => {
-          if (mark.id === markId) {
-            return { ...mark, time: time };
-          }
-          return mark;
-        });
-        console.log(task.markQueue, 'markqueue')
-        console.log(task.marksCount, 'markscount')
-        return {
-          ...task,
-          markList: updatedMarkList,
-          markQueue: markId + 1, // Обновляем очередь отсечек
+    setTasks(
+      tasks.map((task: Task) => {
+        if (task.id === taskId) {
+          const updatedMarkList = task.markList.map((mark) => {
+            if (mark.id === markId) {
+              return { ...mark, time: time };
+            }
+            return mark;
+          });
+          console.log(task.markQueue, "markqueue");
+          console.log(task.marksCount, "markscount");
+          return {
+            ...task,
+            markList: updatedMarkList,
+            markQueue: markId + 1, // Обновляем очередь отсечек
+          };
+        }
 
-        };
-
-      }
-
-      return task;
-    }));
+        return task;
+      })
+    );
 
     setFinishActive(false);
   };
@@ -128,7 +166,10 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
     setTasks(
       tasks.map((task: Task) => {
         if (task.id === taskId && task.markQueue >= task.markList.length) {
-          const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
+          const totalTime = task.markList.reduce(
+            (total, mark) => total + mark.time,
+            0
+          );
           setTotalTime(totalTime);
           setTimers([...timers, totalTime]);
 
@@ -143,7 +184,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           return {
             ...task,
             active: false,
-            allStarts: updatedAllStarts
+            allStarts: updatedAllStarts,
           };
         }
         return task;
@@ -151,56 +192,75 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
     );
   };
 
-
   return (
     <div className='mainBody'>
       <main>
-        <button className='testbtn' onClick={() => setModalActive(true)}>Создать новое дело</button>
+        <button className='testbtn' onClick={() => setModalActive(true)}>
+          Создать новое дело
+        </button>
       </main>
       <Modal active={deleteModal} setActive={setDeleteModal}>
         <h3 className='deleteTitle'>Удалить задачу</h3>
         {taskToDelete !== null && (
           <div>
-            <p className='deleteText'>Вы действительно хотите удалить задачу "{tasks.find(t => t.id === taskToDelete)?.title}"?</p>
+            <p className='deleteText'>
+              Вы действительно хотите удалить задачу "
+              {tasks.find((t) => t.id === taskToDelete)?.title}"?
+            </p>
             <div className='deleteButtons'>
-              <button className='deleteConfirm' onClick={() => {
-                if (taskToDelete !== null) {
-                  deleteTask(taskToDelete);
+              <button
+                className='deleteConfirm'
+                onClick={() => {
+                  if (taskToDelete !== null) {
+                    deleteTask(taskToDelete);
+                    setDeleteModal(false);
+                    setTaskToDelete(null); // Сбрасываем идентификатор после удаления
+                  }
+                }}
+              >
+                Удалить
+              </button>
+              <button
+                className='deleteDecline'
+                onClick={() => {
                   setDeleteModal(false);
-                  setTaskToDelete(null); // Сбрасываем идентификатор после удаления
-                }
-              }}>Удалить</button>
-              <button className='deleteDecline' onClick={() => {
-                setDeleteModal(false);
-                setTaskToDelete(null); // Сбрасываем идентификатор при отмене
-              }}>Отмена</button>
+                  setTaskToDelete(null); // Сбрасываем идентификатор при отмене
+                }}
+              >
+                Отмена
+              </button>
             </div>
-
           </div>
         )}
       </Modal>
 
-
       <Modal active={finishActive} setActive={setFinishActive}>
-        <h1 className="endscreenTitle">ЗАВЕРШЕНО!</h1>
+        <h1 className='endscreenTitle'>ЗАВЕРШЕНО!</h1>
         {completedTask && (
           <>
-            <p className="endscreenText">Дело завершено за {formatTimeNamed(totalTime)}</p>
-            <p className="endscreenMarksTitle">Отчёт по отсечкам: </p>
+            <p className='endscreenText'>
+              Дело завершено за {formatTimeNamed(totalTime)}
+            </p>
+            <p className='endscreenMarksTitle'>Отчёт по отсечкам: </p>
             <div>
               {completedTask.markList.map((mark) => (
                 <div key={mark.id}>
-                  <li className="li">
-                    <img src={cornerArrow} alt="" />
+                  <li className='li'>
+                    <img src={cornerArrow} alt='' />
                     <span>{mark.title || `Отсечка ${mark.id}`}</span>
-                    <div className="endscreenMarkTimer">{formatTime(mark.time)}</div>
+                    <div className='endscreenMarkTimer'>
+                      {formatTime(mark.time)}
+                    </div>
                   </li>
                 </div>
               ))}
             </div>
           </>
         )}
-        <button onClick={() => setFinishActive(false)} className="endscreenButton">
+        <button
+          onClick={() => setFinishActive(false)}
+          className='endscreenButton'
+        >
           ЗАКРЫТЬ
         </button>
       </Modal>
@@ -209,10 +269,14 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
         <div className='inputAndStar'>
           <p className={errorTrigger ? "star error" : "star"}>*</p>
           <input
-            type="text"
+            type='text'
             placeholder='Введите текст'
             className='addName'
-            onBlur={(e) => e.target.value.length > 0 ? setErrorTrigger(false) : setErrorTrigger(true)}
+            onBlur={(e) =>
+              e.target.value.length > 0
+                ? setErrorTrigger(false)
+                : setErrorTrigger(true)
+            }
             onChange={(e) => setText(e.target.value)}
             value={text}
           />
@@ -223,18 +287,21 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
         <div className='timeMarks'>
           <div className='marksnbutton'>
             <h3 className='name'>Отсечки</h3>
-            <button className='addMarkButton' onClick={() => marksCounts < 11 ? addMark() : null}>
-              <img src={Plus} alt="" />
+            <button
+              className='addMarkButton'
+              onClick={() => (marksCounts < 11 ? addMark() : null)}
+            >
+              <img src={Plus} alt='' />
             </button>
           </div>
           {marks.map((mark, index) => (
             <div key={index} className='markItem'>
               <h4 className='markTitle'>Отсечка {mark.id}</h4>
               <div className='marksInput'>
-                <img src={cornerArrow} alt="" />
+                <img src={cornerArrow} alt='' />
                 <input
                   placeholder='Введите текст'
-                  type="text"
+                  type='text'
                   className='addMark'
                   onChange={(e) => updateMarkText(mark.id, e.target.value)}
                   value={mark.title}
@@ -244,9 +311,12 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           ))}
         </div>
         <div className='finishEdit'>
-          <button className='finishEditButton' onClick={() => {
-            text.length > 0 ? addTask() : setErrorTrigger(true);
-          }}>
+          <button
+            className='finishEditButton'
+            onClick={() => {
+              text.length > 0 ? addTask() : setErrorTrigger(true);
+            }}
+          >
             ДОБАВИТЬ ДЕЛО
           </button>
         </div>
@@ -255,7 +325,11 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
         <div key={index} className='taskItem'>
           <div className='taskTitleAndButton'>
             <h2 className='taskTitle'>{task.title}</h2>
-            <button className='startTask' disabled={task.active} onClick={() => startButton(task.id)}>
+            <button
+              className='startTask'
+              disabled={task.active}
+              onClick={() => startButton(task.id)}
+            >
               {task.active ? "В ПРОЦЕССЕ..." : "НАЧАТЬ"}
             </button>
           </div>
@@ -263,34 +337,54 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           {task.markList.map((mark, index) => (
             <div key={index} className='markAndTimer'>
               <div className='iconNName'>
-                <img className='icon' src={cornerArrow} alt="" />
-                <h3 className='markSubTitle'>{mark.title || `Отсечка ${mark.id}`}</h3>
+                <img className='icon' src={cornerArrow} alt='' />
+                <h3 className='markSubTitle'>
+                  {mark.title || `Отсечка ${mark.id}`}
+                </h3>
               </div>
               <Timer
-                onStop={(seconds: number) => markButton(task.id, mark.id, seconds)}
+                onStop={(seconds: number) =>
+                  markButton(task.id, mark.id, seconds)
+                }
                 active={task.active && mark.id === task.markQueue}
               />
               <button
                 onClick={() => markButton(task.id, mark.id, 0)}
                 disabled={mark.id !== task.markQueue}
-                className={mark.id === task.markQueue ? 'activeMarkButton' : 'inactiveMarkButton'}
+                className={
+                  mark.id === task.markQueue
+                    ? "activeMarkButton"
+                    : "inactiveMarkButton"
+                }
               >
-                {mark.id === task.markQueue ? <img src={CheckIcon} alt="" /> : "Не активна"}
+                {mark.id === task.markQueue ? (
+                  <img src={CheckIcon} alt='' />
+                ) : (
+                  "Не активна"
+                )}
               </button>
             </div>
           ))}
-          <div className='bottomButtons'><button
-            disabled={task.markQueue < task.marksCount}
-            className={task.markQueue < task.marksCount ? 'resultButton' : 'resultButton result'}
-            onClick={() => handleResult(task.id)}
-          >
-            ПОДВЕСТИ ИТОГИ
-          </button>
-            <button onClick={() => {
-              setTaskToDelete(task.id);
-              setDeleteModal(true);
-            }} className='deleteTask'>
-              <img src={TrashIcon} alt="" />
+          <div className='bottomButtons'>
+            <button
+              disabled={task.markQueue < task.marksCount}
+              className={
+                task.markQueue < task.marksCount
+                  ? "resultButton"
+                  : "resultButton result"
+              }
+              onClick={() => handleResult(task.id)}
+            >
+              ПОДВЕСТИ ИТОГИ
+            </button>
+            <button
+              onClick={() => {
+                setTaskToDelete(task.id);
+                setDeleteModal(true);
+              }}
+              className='deleteTask'
+            >
+              <img src={TrashIcon} alt='' />
             </button>
           </div>
         </div>

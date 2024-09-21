@@ -1,31 +1,31 @@
-header{
-    background-color: #4C51CA;
-    height: 100px;
-    margin: 0;
-    top: 0;
-    width: 100vw;
-    position:relative;
+header {
+  background-color: #4c51ca;
+  height: 100px;
+  margin: 0;
+  top: 0;
+  width: 100vw;
+  position: relative;
 }
-.logo{
-    color:white;
-    font-size: 18px;
-    font-weight: 700;
+.logo {
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
 }
-.logo:focus{
-    color:wheat;
+.logo:focus {
+  color: wheat;
 }
-.chartsButton{
-    color: #f5deb3;
+.chartsButton {
+  color: #f5deb3;
 }
-.headerL{
-    display: flex;
-    justify-content: space-between;
-    align-content: center;
-    padding-left: 20px;
-    padding-right: 20px;
+.headerL {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }
-nav{
-    margin: 0;
-    height: 100px;
-    align-content: center;
+nav {
+  margin: 0;
+  height: 100px;
+  align-content: center;
 }

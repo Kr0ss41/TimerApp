@@ -1,18 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './timer.css'
+import React, { useState, useEffect, useRef } from "react";
+import "./timer.css";
 
 const Timer = ({ active, onStop }) => {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const timerRef = useRef(null);
 
-
   const formatTime = (secs) => {
     const hours = Math.floor(secs / 3600);
     const minutes = Math.floor((secs % 3600) / 60);
     const seconds = secs % 60;
 
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(seconds).padStart(2, "0")}`;
   };
 
   const startTimer = () => {
@@ -58,7 +60,7 @@ const Timer = ({ active, onStop }) => {
 
   return (
     <div>
-      <div className={isRunning ? 'timer activeTimer' : 'timer inactiveTimer'}>
+      <div className={isRunning ? "timer activeTimer" : "timer inactiveTimer"}>
         {formatTime(seconds)}
       </div>
     </div>
@@ -66,6 +68,4 @@ const Timer = ({ active, onStop }) => {
 };
 
 export default Timer;
-export function formatTime(){
-  
-}
+export function formatTime() {}

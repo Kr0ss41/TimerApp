@@ -1,208 +1,203 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  top:0;
-  position:relative;
+  top: 0;
+  position: relative;
   min-height: 100vh;
 }
-.mainBody{
+.mainBody {
   margin-top: 10px;
 }
-.testbtn{
-  background-color: #4C51CA;
+.testbtn {
+  background-color: #4c51ca;
   color: white;
   margin: 0 auto;
   display: block;
-
 }
-.testbtn:hover{
+.testbtn:hover {
   background-color: white;
-  color: #4C51CA;
-  border-color: #4C51CA;
+  color: #4c51ca;
+  border-color: #4c51ca;
   border-width: 2px;
 }
-.name{
+.name {
   font-weight: bold;
   margin-bottom: 8px;
   font-size: 30px;
 }
-.inputAndStar{
+.inputAndStar {
   display: flex;
-  align-items:center;
+  align-items: center;
   height: 30px;
   margin: 0;
 }
-.addName{
+.addName {
   height: 30px;
 }
-.star{
+.star {
   padding-right: 10px;
   color: red;
   font-style: inherit;
   opacity: 0;
 }
-.addName{
+.addName {
   border-radius: 7px;
   border-style: none;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   width: 50vw;
   margin-top: 10px;
 }
-.addName::placeholder{
+.addName::placeholder {
   font-weight: 550;
   font-style: inherit;
   padding-left: 5px;
   font-size: 18px;
 }
-.addName:focus::placeholder{
+.addName:focus::placeholder {
   opacity: 0;
 }
-.errorText{
+.errorText {
   color: red;
   font-size: 10px;
   padding-left: 12px;
   margin: 0;
   opacity: 0;
 }
-.error{
+.error {
   opacity: 1;
 }
-.marksnbutton{
+.marksnbutton {
   display: flex;
   justify-content: space-between;
-  margin-top:15px ;
+  margin-top: 15px;
   margin-bottom: 10px;
 }
-.marksInput{
+.marksInput {
   margin-left: 15px;
 }
-.markTitle{
+.markTitle {
   font-size: 17px;
   font-weight: 700;
   margin-left: 48px;
-  margin-bottom:3px;
+  margin-bottom: 3px;
 }
-.markSubTitle{
+.markSubTitle {
   font-size: 17px;
   font-weight: 700;
 }
-.addMarkButton{
+.addMarkButton {
   border-radius: 7px;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   height: 45px;
 }
-.addMark{
+.addMark {
   margin-left: 7px;
   border-radius: 7px;
   border-style: none;
-  background-color: #D9D9D9;
+  background-color: #d9d9d9;
   width: 50vw;
   height: 30px;
   align-items: center;
 }
-.addMark::placeholder{
+.addMark::placeholder {
   font-weight: 550;
   font-style: inherit;
   padding-left: 5px;
   font-size: 18px;
+  color: #242424;
 }
-.taskTitleAndButton{
+.taskTitleAndButton {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-right:30px;
+  margin-right: 30px;
   margin-bottom: 20px;
 }
-.taskItem{
-  border-color: #4C51CA;
+.taskItem {
+  border-color: #4c51ca;
   border-width: 2px;
-  border-style:solid;
+  border-style: solid;
   border-width: 1px;
   border-left: none;
-  border-right:none;
+  border-right: none;
   border-top: none;
   margin-top: 20px;
 }
-.taskTitle{
+.taskTitle {
   font-size: 25px;
   color: white;
   font-weight: 700;
   margin-left: 48px;
-  margin-bottom:3px;
+  margin-bottom: 3px;
   align-items: center;
-  text-shadow: 
-    -2px -2px 0px #4C51CA,  
-    2px -2px 0px #4C51CA,
-    -2px 2px 0px #4C51CA,
-    2px 2px 0px #4C51CA,
-    0px 0px 2px #4C51CA;
+  text-shadow: -2px -2px 0px #4c51ca, 2px -2px 0px #4c51ca, -2px 2px 0px #4c51ca,
+    2px 2px 0px #4c51ca, 0px 0px 2px #4c51ca;
 }
-.startTask{
-  background-color: #4C51CA;
-  color:white;
+.startTask {
+  background-color: #4c51ca;
+  color: white;
   width: 150px;
   letter-spacing: 3px;
 }
-.startTask:disabled{
+.startTask:disabled {
   background-color: white;
-  color:#4C51CA;
-  border-color: #4C51CA;
+  color: #4c51ca;
+  border-color: #4c51ca;
   border-width: 2px;
   letter-spacing: normal;
 }
-.bottomButtons{
+.bottomButtons {
   display: flex;
   justify-content: flex-end;
   position: relative;
   width: 100%;
   z-index: 1;
 }
-.deleteTask{
+.deleteTask {
   margin-top: 10px;
   margin-right: 0;
   background-color: transparent;
-
 }
-.markAndTimer{
+.markAndTimer {
   display: flex;
-  justify-content:space-evenly;
+  justify-content: space-evenly;
   align-items: center;
   margin-bottom: 10px;
 }
-.icon{
+.icon {
   margin-right: 10px;
 }
-.iconNName{
+.iconNName {
   display: flex;
   align-items: center;
   min-width: 110px;
 }
-.activeMarkButton{
-  background-color:transparent;
-  width: 125px;
-}
-.margin35left{
-margin-left: 35px;
-}
-.inactiveMarkButton{
-  color: #D9D9D9;
+.activeMarkButton {
   background-color: transparent;
   width: 125px;
 }
-.finishEdit{
-  margin-top:30px ;
+.margin35left {
+  margin-left: 35px;
+}
+.inactiveMarkButton {
+  color: #d9d9d9;
+  background-color: transparent;
+  width: 125px;
+}
+.finishEdit {
+  margin-top: 30px;
   display: grid;
   align-items: center;
 }
-.finishEditButton{
-  background-color: #4C51CA;
-  color:white;
+.finishEditButton {
+  background-color: #4c51ca;
+  color: white;
   font-size: 25px;
   letter-spacing: 3px;
 }
-.resultButton{
+.resultButton {
   opacity: 0;
-  background-color: #4C51CA;
+  background-color: #4c51ca;
   color: white;
   letter-spacing: 3px;
   margin-left: auto;
@@ -211,44 +206,44 @@ margin-left: 35px;
   margin-bottom: 15px;
   left: 50%;
 }
-.result{
+.result {
   opacity: 100;
 }
 
 /* ENDSCREEN */
-.endscreenTitle{
+.endscreenTitle {
   font-size: 38px;
   text-align: center;
   font-weight: 700;
-  color: #4C51CA;
+  color: #4c51ca;
   letter-spacing: 1px;
   margin-bottom: 40px;
 }
-.endscreenTimer{
-  color: #4C51CA;
+.endscreenTimer {
+  color: #4c51ca;
   font-weight: 600;
 }
-.endscreenText{
+.endscreenText {
   font-weight: 600;
   font-size: 20px;
   text-align: center;
   margin-bottom: 30px;
 }
-.li{
-  position: relative; 
+.li {
+  position: relative;
   padding-left: 20px;
   display: flex;
   justify-content: space-around;
   font-size: 20px;
   margin-bottom: 10px;
 }
-.li span{
+.li span {
   color: black;
   font-size: 20px;
 }
 
-.endscreenButton{
-  background-color: #4C51CA;
+.endscreenButton {
+  background-color: #4c51ca;
   color: white;
   margin: 0 auto;
   display: block;
@@ -256,51 +251,51 @@ margin-left: 35px;
   letter-spacing: 1px;
   margin-top: 20px;
 }
-.endscreenMarkTimer{
-  color: #4C51CA;
+.endscreenMarkTimer {
+  color: #4c51ca;
   font-size: 20px;
   font-weight: 600;
   border-style: solid;
-  border-color: #4C51CA;
+  border-color: #4c51ca;
   border-width: 2px;
   border-radius: 15px;
   padding: 5px;
 }
-.endscreenMarksTitle{
+.endscreenMarksTitle {
   font-weight: 600;
   font-size: 20px;
   margin-bottom: 10px;
 }
 
 /* DELETE */
-.deleteTitle{
-  color: #4C51CA;
+.deleteTitle {
+  color: #4c51ca;
   font-size: 38px;
   font-weight: 700;
   text-align: center;
   margin-bottom: 10px;
 }
-.deleteText{
+.deleteText {
   font-size: 20px;
   text-align: center;
   margin-bottom: 15px;
   font-weight: 600;
 }
-.deleteButtons{
+.deleteButtons {
   display: flex;
   justify-content: center;
 }
-.deleteConfirm{
+.deleteConfirm {
   color: white;
-  background-color: #4C51CA;
+  background-color: #4c51ca;
   margin-right: 15px;
   font-weight: 700;
   letter-spacing: 1px;
 }
-.deleteDecline{
-  color: #4C51CA;
+.deleteDecline {
+  color: #4c51ca;
   background-color: white;
-  border-color: #4C51CA;
+  border-color: #4c51ca;
   font-weight: 700;
   letter-spacing: 1px;
 }

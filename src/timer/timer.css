@@ -1,24 +1,24 @@
-.timer{
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding-top: 10px;
-    border-radius: 10px;
-    padding-bottom: 10px ;
-    padding-left: 5px;
-    padding-right: 5px;
-    width: 100px;
-    text-align: center;
-    margin: 0 auto;
-    display: block;
+.timer {
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding-top: 10px;
+  border-radius: 10px;
+  padding-bottom: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 100px;
+  text-align: center;
+  margin: 0 auto;
+  display: block;
 }
-.activeTimer{
-    background-color: #4C51CA;
-    color: white;
+.activeTimer {
+  background-color: #4c51ca;
+  color: white;
 }
-.inactiveTimer{
-    background-color: white;
-    color: #4C51CA;
-    border-color:#4C51CA ;
-    border-width: 2px;
-    border-style: solid;
+.inactiveTimer {
+  background-color: white;
+  color: #4c51ca;
+  border-color: #4c51ca;
+  border-width: 2px;
+  border-style: solid;
 }
