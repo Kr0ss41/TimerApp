@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './content.css'
 import Modal from './modal/Modal.jsx'
 import Plus from './icons/plus.svg'
@@ -14,6 +14,8 @@ interface Mark {
   markTimer: number;
   active: boolean;
   time: number;
+  averageTime : number;
+  allStarts : number[]
 }
 
 interface Task {
@@ -24,6 +26,8 @@ interface Task {
   marksCount: number;
   allStarts: number[];
   markList: Mark[];
+  completed: boolean;
+  averageMarkTimes: number[];
 }
 
 interface ContentProps {
@@ -42,12 +46,12 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
   const [errorTrigger, setErrorTrigger] = useState(false);
   const [tasksCount, setTasksCount] = useState(1);
   const [marksCounts, setMarksCounts] = useState(2);
-  const [marks, setMarks] = useState<Mark[]>([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+  const [marks, setMarks] = useState<Mark[]>([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0, averageTime: 0,allStarts:[] }]);
   const [totalTime, setTotalTime] = useState(0);
   const [completedTask, setCompletedTask] = useState<Task | null>(null);
 
   const addMark = () => {
-    setMarks([...marks, { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+    setMarks([...marks, { id: marksCounts, title: '', markTimer: Date.now(), active: false, time: 0 , averageTime: 0, allStarts:[]}]);
     setMarksCounts(marksCounts + 1);
   };
 
@@ -74,26 +78,42 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
   const addTask = () => {
     setTasks([
       ...tasks,
-      { id: tasksCount, title: text, active: false, marksCount: marksCounts, markQueue: 0, allStarts: [], markList: [...marks] }
+      { id: tasksCount, title: text, active: false, marksCount: marksCounts, markQueue: 0, allStarts: [], markList: [...marks], completed: false,averageMarkTimes: [] } // Устанавливаем completed: false
     ]);
     setTasksCount(tasksCount + 1);
     setText("");
     setMarksCounts(2);
-    setMarks([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 }]);
+    setMarks([{ id: 1, title: '', markTimer: Date.now(), active: false, time: 0 ,averageTime: 0,allStarts:[]}]);
+    setModalActive(false)
   };
 
   const startButton = (taskId: number) => {
-    setTasks(tasks.map((task: Task) =>
-      task.id === taskId
-        ? {
+    setTasks(tasks.map((task: Task) => {
+      if (task.id === taskId) {
+        const updatedMarkList = task.markList.map((mark, index) => {
+          // Если уже были завершения задачи (task.allStarts.length > 0), пересчитываем среднее время для отсечек
+          if (task.allStarts.length > 0) {
+            const newAverageTime = (mark.averageTime + mark.time) / (task.allStarts.length);
+            return { ...mark, averageTime: newAverageTime, time: 0 };
+          } else {
+            // Если задача запускается первый раз, устанавливаем текущее время как среднее
+            return { ...mark, averageTime: mark.time, time: 0 };
+          }
+        });
+  
+        return {
           ...task,
           active: true,
           markQueue: 1,
-          markList: task.markList.map(mark => ({ ...mark, time: 0 }))
-        }
-        : task
-    ));
+          completed: false,
+          markList: updatedMarkList
+        };
+      }
+      return task;
+    }));
   };
+  
+
 
   const deleteTask = (taskId: number) => {
     setTasks(tasks.filter(task => task.id !== taskId));
@@ -102,36 +122,37 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
     setTasks(tasks.map((task: Task) => {
       if (task.id === taskId) {
         const updatedMarkList = task.markList.map((mark) => {
-          if (mark.id === markId) {
-            return { ...mark, time: time };
+          if (mark.id === markId && time > 0) { // Проверяем, что время больше 0
+            const updatedAllMarksStarts = [...mark.allStarts, time];
+            if (updatedAllMarksStarts.length > 20) {
+              updatedAllMarksStarts.shift();
+            }
+            return { ...mark, time: time, allStarts: updatedAllMarksStarts };
           }
           return mark;
         });
-        console.log(task.markQueue, 'markqueue')
-        console.log(task.marksCount, 'markscount')
+
         return {
           ...task,
           markList: updatedMarkList,
-          markQueue: markId + 1, // Обновляем очередь отсечек
-
+          markQueue: markId + 1, // Увеличиваем очередь только при успешной записи
         };
-
       }
 
       return task;
     }));
 
     setFinishActive(false);
-  };
+};
+
 
   const handleResult = (taskId: number) => {
     setTasks(
       tasks.map((task: Task) => {
-        if (task.id === taskId && task.markQueue >= task.markList.length) {
+        if (task.id === taskId && task.markQueue >= task.markList.length && !task.completed) { // Добавляем проверку на флаг completed
           const totalTime = task.markList.reduce((total, mark) => total + mark.time, 0);
           setTotalTime(totalTime);
           setTimers([...timers, totalTime]);
-
           const updatedAllStarts = [...task.allStarts, totalTime];
 
           if (updatedAllStarts.length > 20) {
@@ -143,13 +164,16 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           return {
             ...task,
             active: false,
-            allStarts: updatedAllStarts
+            allStarts: updatedAllStarts,
+            completed: true, // Устанавливаем флаг completed в true
           };
         }
         return task;
       })
     );
+    console.log(tasks.map((task:Task)=>task.markList.map(mark=>mark.allStarts)))
   };
+
 
 
   return (
@@ -179,7 +203,6 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           </div>
         )}
       </Modal>
-
 
       <Modal active={finishActive} setActive={setFinishActive}>
         <h1 className="endscreenTitle">ЗАВЕРШЕНО!</h1>
@@ -279,13 +302,16 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
               </button>
             </div>
           ))}
-          <div className='bottomButtons'><button
-            disabled={task.markQueue < task.marksCount}
-            className={task.markQueue < task.marksCount ? 'resultButton' : 'resultButton result'}
-            onClick={() => handleResult(task.id)}
-          >
-            ПОДВЕСТИ ИТОГИ
-          </button>
+          <div className='bottomButtons'>
+            {!task.completed && (
+            <button
+              disabled={task.markQueue < task.marksCount}
+              className={task.markQueue < task.marksCount ? 'resultButton' : 'resultButton result'}
+              onClick={() => handleResult(task.id)}
+            >
+              ПОДВЕСТИ ИТОГИ
+            </button>
+          )}
             <button onClick={() => {
               setTaskToDelete(task.id);
               setDeleteModal(true);

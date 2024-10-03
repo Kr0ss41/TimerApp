@@ -14,6 +14,17 @@ header{
 .logo:focus{
     color:wheat;
 }
+
+.infobutton{
+    border-radius: 25px;
+    border-style: solid;
+    background-color: transparent;
+    border-color: white;
+    border-width: 5px;
+    padding: 8px;
+    padding-bottom: 4px;
+}
+
 .chartsButton{
     color: #f5deb3;
 }
@@ -28,4 +39,26 @@ nav{
     margin: 0;
     height: 100px;
     align-content: center;
+}
+.modalStatsL{
+    width: 70vw;
+    text-align: center;
+    background-color: #4C51CA;
+    margin:0 auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    font-size: 48px;
+    padding: 15px;
+    padding-bottom: 20px;
+    border-radius: 25px;
+}
+.modalStats{
+    display: flex;
+    flex-flow: column;
+    align-content: center;
+    justify-content: center;
+}
+.fontClass{
+    color: white;
+    letter-spacing: 1px;
 }

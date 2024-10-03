@@ -1,0 +1,88 @@
+.placeholderText{
+    text-align: center;
+    font-size: 36px;
+    color: rgb(194, 194, 194);
+}
+.placeholderBox{
+    margin-top: 50vw;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.statItem{
+    margin-bottom: 25px;
+}
+.statItemText{
+    font-size: 24px;
+}
+.statItemBox{
+    padding-top: 10px;
+    padding-left: 30px;
+    padding-bottom: 10px;
+    background-color: #e9eafc;
+}
+.statNumber{
+    color: #4C51CA;
+    font-weight: 600;
+}
+.task-stats{
+    margin-bottom: 30px;
+    margin-top: 10px;
+}
+.statsNameBox{
+    border-radius: 6px;
+    padding: 5px;
+    border-style: solid;
+    border-color: #4C51CA;
+    border-width: 1px;
+}
+.statsNameBoxActive{
+    background-color: #4C51CA;
+    border-radius: 6px;
+    padding: 5px;
+}
+.statsNameText{
+    cursor: pointer;
+    font-size:30px;
+    padding-left:15px;
+    color: #4C51CA;
+}
+.statsNameTextActive{
+    color: white;
+    cursor: pointer;
+    font-size:30px;
+    padding-left:15px;
+}
+
+/* CHARTS */
+
+.marksTable {
+    margin-top: 20px;
+  }
+  
+  .marksTable table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .marksTable th, .marksTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .marksTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .colorIndicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  

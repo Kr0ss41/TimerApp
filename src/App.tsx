@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './header.jsx'
 import Content from './content';
-import Charts from './charts/charts';
+import Charts from './pages/charts.js';
+import Stats from './pages/stats.js';
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState(() => {
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Content tasks={tasks} setTasks={setTasks} timers={timers} setTimers={setTimers} />} />
         <Route path="/charts" element={<Charts tasks={tasks} />} />
+        <Route path='/stats' element={<Stats tasks={tasks}/>}/>
       </Routes>
     </Router>
   )
