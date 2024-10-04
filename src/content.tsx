@@ -90,7 +90,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
   const startButton = (taskId: number) => {
     setTasks(tasks.map((task: Task) => {
       if (task.id === taskId) {
-        const updatedMarkList = task.markList.map((mark, index) => {
+        const updatedMarkList = task.markList.map((mark) => {
           // Если уже были завершения задачи (task.allStarts.length > 0), пересчитываем среднее время для отсечек
           if (task.allStarts.length > 0) {
             const newAverageTime = (mark.averageTime + mark.time) / 2;
@@ -99,7 +99,8 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
             // Если задача запускается первый раз, устанавливаем текущее время как среднее
             return { ...mark, averageTime: mark.time, time: 0 };
           }
-        });
+        }
+      );
   
         return {
           ...task,
@@ -112,6 +113,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
       return task;
     }));
   };
+
   
 
 

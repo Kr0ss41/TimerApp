@@ -160,7 +160,11 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
               },
             ],
           };
-          const averageTimes = task.markList.map((mark) => Math.round(mark.averageTime));
+          const averageTimes = task.markList.map((mark) => {
+            if (mark.allStarts.length === 0) return 0; // Если нет данных, возвращаем 0
+            const total = mark.allStarts.reduce((acc, start) => acc + start, 0); // Суммируем все значения
+            return Math.round(total / mark.allStarts.length); // Среднее значение
+          });          
           const lastMarkTimes = task.markList.map((mark) => Math.round(mark.time));
           const labelsAvr = [];
           if (averageTimes.some((time) => time > 0)) {
@@ -225,7 +229,7 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
 
           const lastRunsBarChartData = {
             labels: labels,
-            datasets: task.markList.map((mark, index) => ({
+            datasets: task.markList.map((mark) => ({
               label: `Отсечка ${mark.title}`,
               backgroundColor: getRandomColor(),
               data: mark.allStarts.slice(-lastRunsCount).map(start => Math.round(start)),
@@ -259,7 +263,7 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
               legend: { display: true, labels: { color: isDarkMode ? 'white' : 'gray' }, position: 'top' as const },
               title: { display: true, color: isDarkMode ? 'white' : 'black', text: `График последних запусков для задачи ${task.title}` },
             },
-            barThickness: 20,
+            barThickness: 15,
           };
 
 

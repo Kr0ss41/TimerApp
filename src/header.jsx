@@ -18,7 +18,7 @@ const Header = () => {
       </Modal>
       <nav>
         <ul className='headerL'>
-          <li><Link className='logo' to="/"><h1>TIMORA</h1></Link></li>
+          <li><Link className='logo' to="/"><h1>TIMERUSH</h1></Link></li>
           <li><button className='infobutton' onClick={() => setModalActive(true)}>
             <ChartsIcon/>
           </button></li>
