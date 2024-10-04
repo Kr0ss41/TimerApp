@@ -66,6 +66,6 @@ const Timer = ({ active, onStop }) => {
 };
 
 export default Timer;
-export function formatTime(){
-  
+export function formatTime() {
+
 }

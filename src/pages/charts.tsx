@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import './stats.css';
 import { Line, Bar } from 'react-chartjs-2';
 import {
@@ -43,6 +43,7 @@ interface ChartsProps {
 
 const Charts: React.FC<ChartsProps> = ({ tasks }) => {
   const [openTaskId, setOpenTaskId] = useState<number | null>(null);
+  const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   const getRandomColor = () => {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -57,7 +58,7 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
   const handleTaskClick = (taskId: number) => {
-    setOpenTaskId(openTaskId === taskId ? null : taskId); // Переключение состояния (если задача уже открыта, закрываем её)
+    setOpenTaskId(openTaskId === taskId ? null : taskId);
   };
   const timeLabelPlugin: Plugin<ChartType> = {
     id: 'timeLabelPlugin',
@@ -70,26 +71,39 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
           const timeText = formatTime(dataValue);
 
           let percentageDiffText = '';
-          if (index === 1) { // Если это столбец "Последнее время"
-            const averageValue = dataset.data[0] as number; // Среднее значение (из столбца среднего времени)
-            const percentageDiff = ((dataValue - averageValue) / averageValue) * 100;
-            percentageDiffText = `(${Math.round(percentageDiff)}%)`;
+          let percentageDiffColor = 'black';
+          if (index === 1) {
+            const averageValue = dataset.data[0] as number;
+            const percentageDiff = averageValue !== 0
+              ? ((dataValue - averageValue) / averageValue) * 100
+              : 0;
+            percentageDiffText = `${Math.round(percentageDiff)}%`;
+            if (percentageDiff > 0) {
+              percentageDiffColor = 'green';
+            } else if (percentageDiff < 0) {
+              percentageDiffColor = '#DC143C';
+            } else {
+              percentageDiffColor = 'darkgray';
+            }
           }
+
 
           if (bar && typeof bar.getProps === 'function') {
             const { x, y, base, width } = bar.getProps(['x', 'y', 'base', 'width'], true);
 
-            const xPos = x + width / 2 + 15; // Позиция текста справа от столбца
-            const yPos = y + (base - y) / 2; // Позиция текста по середине столбца
+            const xPos = x + width / 2 + 15;
+            const yPos = y + (base - y) / 2;
+            const previousValue = index > 0 ? dataset.data[index - 1] as number : 0;
+            const fontSize = Math.abs(dataValue - previousValue) < 2 ? 10 : 12; // Уменьшаем шрифт, если разница меньше 10 секунд
 
             // Отрисовываем текст рядом с каждым столбцом
-            ctx.font = '12px Arial';
-            ctx.fillStyle = 'black';
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.fillStyle = isDarkMode ? 'white' : 'black';
             ctx.fillText(timeText, xPos, yPos);
-
-            // Отрисовываем процентную разницу для последнего времени
             if (percentageDiffText) {
-              ctx.fillText(percentageDiffText, xPos + 40, yPos); // Расположим процент справа от времени
+              ctx.font = `bold ${fontSize}px Arial`
+              ctx.fillStyle = percentageDiffColor;
+              ctx.fillText(percentageDiffText, xPos + 35, yPos);
             }
           }
         });
@@ -111,10 +125,11 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
 
             const xPos = x + width / 2 + 15; // Позиция текста справа от столбца
             const yPos = y + (base - y) / 2; // Позиция текста по середине столбца
-
+            const previousValue = index > 0 ? dataset.data[index - 1] as number : 0;
+            const fontSize = Math.abs(dataValue - previousValue) < 2 ? 9 : 12;
             // Отрисовываем текст рядом с каждым столбцом
-            ctx.font = '12px Arial';
-            ctx.fillStyle = 'black';
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.fillStyle = isDarkMode ? 'white' : 'black';
             ctx.fillText(timeText, xPos, yPos);
           }
         });
@@ -147,15 +162,30 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
           };
           const averageTimes = task.markList.map((mark) => Math.round(mark.averageTime));
           const lastMarkTimes = task.markList.map((mark) => Math.round(mark.time));
+          const labelsAvr = [];
+          if (averageTimes.some((time) => time > 0)) {
+            labelsAvr.push('Среднее время');
+          }
+          labelsAvr.push('Последнее время');
 
           const barChartData = {
-            labels: ['Среднее время', 'Последнее время'],
-            datasets: task.markList.map((mark, index) => ({
-              label: `Отсечка ${mark.title}`,
-              backgroundColor: getRandomColor(),
-              data: [averageTimes[index], lastMarkTimes[index]],
-              stack: 'Stack 0',
-            })),
+            labels: labelsAvr,
+            datasets: task.markList.map((mark, index) => {
+              const data = [];
+
+              if (averageTimes[index] > 0) {
+                data.push(averageTimes[index]); // Добавляем столбец среднего времени, если есть данные
+              }
+
+              data.push(lastMarkTimes[index]); // Всегда добавляем столбец последнего времени
+
+              return {
+                label: `Отсечка ${mark.title}`,
+                backgroundColor: getRandomColor(),
+                data: data, // Добавляем данные динамически
+                stack: 'Stack 0',
+              };
+            }),
           };
 
           const barChartOptions = {
@@ -164,15 +194,16 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
             scales: {
               y: {
                 beginAtZero: true,
-                title: { display: true, text: 'Время (секунды)' },
+                title: { color: isDarkMode ? 'white' : 'gray', display: true, text: 'Время (секунды)' },
                 grid: {
+                  color: isDarkMode ? '#87CEEB' : 'gray',
                   display: true,
                   lineWidth: 0.5,
                 },
               },
               x: {
                 stacked: true,
-                title: { display: true, text: 'Среднее и последнее время' },
+                title: { color: isDarkMode ? 'white' : 'gray', display: true, text: 'Среднее и последнее время' },
                 grid: {
                   display: true,
                   lineWidth: 0.5,
@@ -180,15 +211,18 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
               },
             },
             plugins: {
-              legend: { display: true, position: 'top' as const },
-              title: { display: true, text: `График отсечек для задачи ${task.title}` },
+              legend: {
+                labels: {
+                  color: isDarkMode ? 'white' : 'gray'
+                }, display: true, position: 'top' as const
+              },
+              title: { display: true, color: isDarkMode ? 'white' : 'black', text: `График отсечек для задачи ${task.title}` },
             },
             barThickness: 20,
           };
           const lastRunsCount = Math.min(5, task.markList[0]?.allStarts.length || 0);
           const labels = Array.from({ length: lastRunsCount }, (_, i) => `Запуск ${i + 1}`);
 
-          // Данные для составных столбцов последних 5 запусков
           const lastRunsBarChartData = {
             labels: labels,
             datasets: task.markList.map((mark, index) => ({
@@ -205,15 +239,16 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
             scales: {
               y: {
                 beginAtZero: true,
-                title: { display: true, text: 'Время (секунды)' },
+                title: { color: isDarkMode ? 'white' : 'gray', display: true, text: 'Время (секунды)' },
                 grid: {
+                  color: isDarkMode ? '#87CEEB' : 'gray',
                   display: true,
                   lineWidth: 0.5,
                 },
               },
               x: {
                 stacked: true,
-                title: { display: true, text: 'Последние запуски' },
+                title: { color: isDarkMode ? 'white' : 'gray', display: true, text: 'Последние запуски' },
                 grid: {
                   display: true,
                   lineWidth: 0.5,
@@ -221,15 +256,15 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
               },
             },
             plugins: {
-              legend: { display: true, position: 'top' as const },
-              title: { display: true, text: `График последних запусков для задачи ${task.title}` },
+              legend: { display: true, labels: { color: isDarkMode ? 'white' : 'gray' }, position: 'top' as const },
+              title: { display: true, color: isDarkMode ? 'white' : 'black', text: `График последних запусков для задачи ${task.title}` },
             },
             barThickness: 20,
           };
 
 
           return (
-            <div key={task.id} className="taskAccordion"style={{marginBottom:"20px",marginTop:"15px"}}>
+            <div key={task.id} className="taskAccordion" style={{ marginBottom: "20px", marginTop: "15px" }}>
               <div className={openTaskId === task.id ? 'statsNameBoxActive' : 'statsNameBox'} onClick={() => handleTaskClick(task.id)}>
                 <h2 className={openTaskId === task.id ? 'statsNameTextActive' : 'statsNameText'}>Графики {task.title} {openTaskId === task.id ? '-' : '+'}</h2>
               </div>
@@ -238,15 +273,16 @@ const Charts: React.FC<ChartsProps> = ({ tasks }) => {
                 <div className="taskCharts">
                   <div style={{ width: '94%', height: '300px', marginRight: '10px', marginBottom: '40px' }}>
                     <Line data={completionChartData} options={{
+
                       responsive: true,
                       maintainAspectRatio: false,
                       scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Время (секунды)' } },
-                        x: { title: { display: true, text: 'Количество завершений' } },
+                        y: { grid: { color: isDarkMode ? '#87CEEB' : 'gray', }, beginAtZero: true, title: { color: isDarkMode ? 'white' : 'gray', display: true, text: 'Время (секунды)' } },
+                        x: { grid: { color: isDarkMode ? '#87CEEB' : 'gray', }, title: { display: true, color: isDarkMode ? 'white' : 'black', text: 'Количество завершений' } },
                       },
                       plugins: {
-                        legend: { labels: { font: { size: 16 } } },
-                        title: { display: true, text: `График завершений для ${task.title}` },
+                        legend: { labels: { color: isDarkMode ? 'white' : 'gray', font: { size: 16 } } },
+                        title: { display: true, color: isDarkMode ? 'white' : 'black', text: `График завершений для ${task.title}` },
                       },
                     }} />
                   </div>

@@ -1,9 +1,11 @@
 #root {
+  width: 100vw;
   max-width: 1280px;
   margin: 0 auto;
   top:0;
   position:relative;
   min-height: 100vh;
+  margin-top:100px
 }
 .mainBody{
   margin-top: 10px;
@@ -303,4 +305,40 @@ margin-left: 35px;
   border-color: #4C51CA;
   font-weight: 700;
   letter-spacing: 1px;
+}
+
+@media (prefers-color-scheme: dark){
+  .deleteTask{
+    background-color: white;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+  #root{
+    background-color: #191b44;
+  }
+  .name{
+    color:#4C51CA
+  }
+  .markTitle{
+    color:#4C51CA
+  }
+  .statsNameBox{
+    background:linear-gradient(to right,white,#a4a5c2)
+  }
+  .taskCharts{
+    border-color: white;
+    border-radius: 14px;
+    border-width: 3px;
+    border-style: solid;
+  }
+  .taskItem{
+    border-bottom-width: 5px;
+    border-bottom-color: white ;
+  }
+  .endscreenText{
+    color: black
+  }
+  .endscreenMarksTitle{
+    color: black;
+  }
 }

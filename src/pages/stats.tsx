@@ -27,7 +27,7 @@ const formatTime = (secs: number) => {
 const formatTimeNamed = (secs: number) => {
   const hours = Math.floor(secs / 3600);
   const minutes = Math.floor((secs % 3600) / 60);
-  const seconds = secs % 60;
+  const seconds = (secs % 60).toFixed(3);
   return <span className='endscreenTimer'>{String(hours).padStart(2, '0')} ч. {String(minutes).padStart(2, '0')} м. {String(seconds).padStart(2, '0')} с.</span>;
 };
 const calculateAverage = (times: number[]) => {
@@ -38,10 +38,7 @@ const calculateAverage = (times: number[]) => {
 const formatPercentage = (percentage: number) => {
   return percentage > 0 ? `+${percentage.toFixed(2)}%` : `${percentage.toFixed(2)}%`;
 };
-const calculatePercentageDifferenceMark = (current: number, previous: number) => {
-  if (previous === 0) return 0;
-  return ((current - previous) / previous) * 100;
-};
+
 
 const calculatePercentageDifference = (current: number, average: number) => {
   if (average === 0) return 0;

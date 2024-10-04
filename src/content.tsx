@@ -74,7 +74,6 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
     const seconds = secs % 60;
     return <span className='endscreenTimer'>{String(hours).padStart(2, '0')} ч. {String(minutes).padStart(2, '0')} м. {String(seconds).padStart(2, '0')} с.</span>;
   };
-
   const addTask = () => {
     setTasks([
       ...tasks,
@@ -87,13 +86,14 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
     setModalActive(false)
   };
 
+  
   const startButton = (taskId: number) => {
     setTasks(tasks.map((task: Task) => {
       if (task.id === taskId) {
         const updatedMarkList = task.markList.map((mark, index) => {
           // Если уже были завершения задачи (task.allStarts.length > 0), пересчитываем среднее время для отсечек
           if (task.allStarts.length > 0) {
-            const newAverageTime = (mark.averageTime + mark.time) / (task.allStarts.length);
+            const newAverageTime = (mark.averageTime + mark.time) / 2;
             return { ...mark, averageTime: newAverageTime, time: 0 };
           } else {
             // Если задача запускается первый раз, устанавливаем текущее время как среднее
@@ -131,7 +131,9 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           }
           return mark;
         });
-
+        console.log(task.markQueue, 'markqueue')
+        console.log(task.marksCount, 'markscount')
+        console.log(task.marksCount, task.markList.map(mark => (mark.averageTime)))
         return {
           ...task,
           markList: updatedMarkList,
@@ -179,7 +181,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
   return (
     <div className='mainBody'>
       <main>
-        <button className='testbtn' onClick={() => setModalActive(true)}>Создать новое дело</button>
+        <button className='testbtn' onClick={() => setModalActive(true)}>Создать новую задачу</button>
       </main>
       <Modal active={deleteModal} setActive={setDeleteModal}>
         <h3 className='deleteTitle'>Удалить задачу</h3>
@@ -208,7 +210,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
         <h1 className="endscreenTitle">ЗАВЕРШЕНО!</h1>
         {completedTask && (
           <>
-            <p className="endscreenText">Дело завершено за {formatTimeNamed(totalTime)}</p>
+            <div className="endscreenText"><p style={{fontSize:"24px"}}>Задача завершена за </p>{formatTimeNamed(totalTime)}</div>
             <p className="endscreenMarksTitle">Отчёт по отсечкам: </p>
             <div>
               {completedTask.markList.map((mark) => (
@@ -270,7 +272,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
           <button className='finishEditButton' onClick={() => {
             text.length > 0 ? addTask() : setErrorTrigger(true);
           }}>
-            ДОБАВИТЬ ДЕЛО
+            ДОБАВИТЬ ЗАДАЧУ
           </button>
         </div>
       </Modal>
@@ -292,6 +294,7 @@ const Content: React.FC<ContentProps> = ({ tasks, setTasks, timers, setTimers })
               <Timer
                 onStop={(seconds: number) => markButton(task.id, mark.id, seconds)}
                 active={task.active && mark.id === task.markQueue}
+                resetOnStart={true} 
               />
               <button
                 onClick={() => markButton(task.id, mark.id, 0)}

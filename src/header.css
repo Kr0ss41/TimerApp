@@ -3,8 +3,10 @@ header{
     height: 100px;
     margin: 0;
     top: 0;
+    left:0;
     width: 100vw;
-    position:relative;
+    position:fixed;
+    z-index: 999;
 }
 .logo{
     color:white;
@@ -16,10 +18,10 @@ header{
 }
 
 .infobutton{
-    border-radius: 25px;
+    border-radius: 15px;
     border-style: solid;
-    background-color: transparent;
-    border-color: white;
+    background-color: white;
+    border-color: #a2a5ff;
     border-width: 5px;
     padding: 8px;
     padding-bottom: 4px;
@@ -61,4 +63,5 @@ nav{
 .fontClass{
     color: white;
     letter-spacing: 1px;
+    font-size:42px
 }
